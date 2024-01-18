@@ -14,7 +14,7 @@ The **Dria Python Client** is a Python library that provides convenient access t
 To install the **Dria Python Client**, you can use pip:
 
 ```bash
-pip install dria-python-client
+pip install dria
 ```
 
 
