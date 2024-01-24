@@ -1,4 +1,4 @@
-from client import DriaClient
+from dria.core.client import DriaClient
 from dria.models.models import ModelEnum
 
 
@@ -93,16 +93,3 @@ class DriaIndex:
         """
         response = self.client.batch_insert(batch, self.contract)
         return response
-
-
-if __name__ == "__main__":
-    api_key = "<api_key>"
-    dria_index = DriaIndex(api_key=api_key,
-                           contract_id="<contract_id>",
-                           model=ModelEnum.jina_embeddings_v2_base_en)
-
-    # dria_index.create_index("History of France", ModelEnum.jina_embeddings_v2_base_en, "History",
-    #                        "A knowledge base about the history of France.")
-    print(dria_index.search_query("What is the capital of France?", top_n=10))
-    print(dria_index.query_data([0.1, 0.2, 0.3], 10))
-    print(dria_index.fetch_data([1, 2, 3]))
