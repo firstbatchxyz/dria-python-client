@@ -124,12 +124,21 @@ class DriaClient:
         Returns:
             InsertResponse: The response from the batch insert operation.
         Raises:
-            ValueError: If the batch size exceeds the maximum limit (1000) or if the format of the batch is invalid.
+            ValueError: If the batch size exceeds the maximum limit (1000), if the format of the batch is invalid,
+                        or if any value under "metadata" is not a string.
         """
         if len(batch) > 1000:
             raise DriaParameterError("Batch size exceeds the maximum limit of 1000")
         try:
-            formatted_batch = [(item["vectors"], item["metadata"]) for item in batch]
+            formatted_batch = []
+            for item in batch:
+                vectors = item["vectors"]
+                metadata = item["metadata"]
+
+                if not all(isinstance(value, str) for value in metadata.values()):
+                    raise DriaParameterError("All values under 'metadata' should be strings")
+
+                formatted_batch.append((vectors, metadata))
         except KeyError:
             raise DriaParameterError("Batch data must be a list of dictionaries with keys 'vectors' and 'metadata'")
 
