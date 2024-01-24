@@ -1,12 +1,14 @@
 import base64
+import json
 from typing import List, Dict, Tuple, Optional
 
 import dria.core.grpc.vector_pb2 as vector_pb2
 from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT
 from dria.core.api.api import API
 from dria.exceptions import DriaParameterError
-from dria.models import SearchRequest, QueryResponse, FetchResponse, QueryResult
-from dria.models.models import FetchRequest, InsertRequest, InsertResponse
+from dria.models import SearchRequest, SearchResult, QueryResult
+from dria.models.models import FetchRequest, InsertRequest, InsertResponse, ModelEnum, CreateIndex, CreateIndexResponse, \
+    QueryRequest, FetchResult
 
 
 class DriaClient:
@@ -20,9 +22,37 @@ class DriaClient:
         self._api = API(host=DRIA_HOST, api_key=api_key)
         self._root_path = DRIA_HNSW_ROOT
 
-    def search(self, query: str, contract_id: str, top_n: int,
-               field: Optional[str] = None, model: Optional[str] = None,
-               re_rank: Optional[bool] = None, level: Optional[int] = None):
+    def create(self, name: str, embedding: ModelEnum, category: str,
+               description: Optional[str] = None):
+        """
+        Perform a search operation.
+        Args:
+            description (Optional[str]): The description of the knowledge base.
+            category (str): The category of the knowledge base.
+            name (str): The name of the knowledge base.
+            embedding (str): The embedding model to use.
+
+        Supported Embedding Models:
+            - jina_embeddings_v2_base_en
+            - jina_embeddings_v2_small_en
+            - text_embedding_ada_002
+
+        Example:
+            contract_id = dria.create(name="History of France",
+               embedding="jina_embeddings_v2_base_en",
+               category="History",
+               description="A knowledge base about the history of France.")
+
+        Returns:
+            QueryResponse: The query response.
+        """
+
+        sr = CreateIndex(name=name, embedding=embedding.value, category=category, description=description)
+        resp = self._api.create("/v1/knowledge/index/create", payload=sr.to_json())
+        return CreateIndexResponse(**resp)
+
+    def search(self, query: str, contract_id: str, top_n: int, model: str,
+               field: Optional[str] = None, re_rank: Optional[bool] = None, level: Optional[int] = 2):
         """
         Perform a search operation.
         Args:
@@ -34,10 +64,6 @@ class DriaClient:
             re_rank (Optional[bool]): Whether to perform re-ranking.
             level (Optional[int]): The search level.
 
-        Example:
-            dria.search("What is the capital of France?", "<CONTRACT_ID>", top_n=10)
-            dria.search("Where is the Eiffel Tower?", "<CONTRACT_ID>", top_n=10, model="text-embedding-ada-002")
-
         Returns:
             QueryResponse: The query response.
         """
@@ -45,7 +71,7 @@ class DriaClient:
         sr = SearchRequest(query=query, contract_id=contract_id, top_n=top_n,
                            field=field, model=model, re_rank=re_rank, level=level)
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
-        return QueryResponse(results=[QueryResult.from_dict(result) for result in resp])
+        return [SearchResult(**result).to_dict() for result in resp]
 
     def query(self, vector: List[float], contract_id: str, top_n: int = 10):
         """
@@ -62,10 +88,10 @@ class DriaClient:
             QueryResponse: The query response.
         """
 
-        qr = QueryResponse(vector=vector, contract_id=contract_id, top_n=top_n)
+        qr = QueryRequest(vector=vector, contract_id=contract_id, top_n=top_n)
 
         resp = self._api.post(self._root_path + "/query", payload=qr.model_dump())
-        return QueryResponse(results=[QueryResult.from_dict(result) for result in resp])
+        return [QueryResult(**result).to_dict() for result in resp]
 
     def fetch(self, ids: List[int], contract_id: str):
         """
@@ -84,7 +110,7 @@ class DriaClient:
         fr = FetchRequest(contract_id=contract_id, id=ids)
 
         resp = self._api.post(self._root_path + "/fetch", payload=fr.model_dump())
-        return FetchResponse(results=(ids, resp))
+        return [FetchResult(id=ids[idx], metadata=json.loads(result)).to_json() for idx, result in enumerate(resp)]
 
     def batch_insert(self, batch: List[Dict], contract_id: str):
         """

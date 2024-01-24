@@ -1,3 +1,3 @@
-from dria.core import DriaClient
+from dria.core import DriaIndex
 
-__all__ = ["DriaClient"]
+__all__ = ["DriaIndex"]

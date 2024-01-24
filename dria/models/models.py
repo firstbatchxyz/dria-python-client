@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from pydantic import BaseModel, field_validator
 from typing import Optional, Dict, List, Tuple
@@ -9,9 +10,9 @@ from dria.exceptions import DriaParameterError
 
 
 class ModelEnum(str, Enum):
-    jina_embeddings_v2_base_en = 'jinaai/jina-embeddings-v2-base-en'
-    jina_embeddings_v2_small_en = 'jinaai/jina-embeddings-v2-small-en'
-    text_embedding_ada_002 = 'openai/text-embedding-ada-002'
+    jina_embeddings_v2_base_en = 'jina-embeddings-v2-base-en'
+    jina_embeddings_v2_small_en = 'jina-embeddings-v2-small-en'
+    text_embedding_ada_002 = 'text-embedding-ada-002'
 
 
 @dataclass_json
@@ -22,16 +23,14 @@ class SearchResult:
     metadata: Dict
 
 
-@dataclass_json
-@dataclass
 class SearchRequest(BaseModel):
     query: str
     contract_id: str
     top_n: int
     field: Optional[str] = None
-    model: Optional[str] = None
+    model: str
     re_rank: Optional[bool] = None
-    level: Optional[int] = None
+    level: Optional[int] = 2
 
     def to_json(self):
         return self.model_dump()
@@ -44,7 +43,7 @@ class SearchRequest(BaseModel):
 
     @field_validator('model')
     def check_model(cls, v: str) -> str:
-        if v not in ModelEnum.__members__:
+        if v not in [x.value for x in ModelEnum]:
             raise DriaParameterError(f"'{v}' is not a valid model enum value.")
         return v
 
@@ -55,6 +54,16 @@ class SearchRequest(BaseModel):
         return v
 
 
+class CreateIndex(BaseModel):
+    name: str
+    embedding: str
+    category: str
+    description: str
+
+    def to_json(self):
+        return self.model_dump()
+
+
 @dataclass_json
 @dataclass
 class QueryResult:
@@ -63,8 +72,6 @@ class QueryResult:
     metadata: Dict
 
 
-@dataclass_json
-@dataclass
 class QueryRequest(BaseModel):
     vector: List[float]
     contract_id: str
@@ -80,37 +87,22 @@ class QueryRequest(BaseModel):
         return v
 
 
-@dataclass_json
-@dataclass
 class FetchResult(BaseModel):
     id: int
     metadata: Dict
 
+    def to_json(self):
+        return self.model_dump()
 
-@dataclass_json
-@dataclass
+
 class FetchRequest(BaseModel):
-    id: int
+    id: List[int]
     contract_id: str
 
     def to_json(self):
         return self.model_dump()
 
 
-@dataclass_json
-@dataclass
-class FetchResponse(BaseModel):
-    results: List[FetchResult]
-
-    def __init__(self, results: Tuple[List[int], List[Dict]]):
-        self.results = [FetchResult(id=id_, metadata=metadata) for id_, metadata in zip(*results)]
-
-    def __iter__(self):
-        return iter(self.results)
-
-
-@dataclass_json
-@dataclass
 class InsertRequest(BaseModel):
     data: str
     contract_id: str
@@ -120,7 +112,9 @@ class InsertRequest(BaseModel):
         return self.model_dump()
 
 
-@dataclass_json
-@dataclass
 class InsertResponse(BaseModel):
     id: int
+
+
+class CreateIndexResponse(BaseModel):
+    contract_id: str

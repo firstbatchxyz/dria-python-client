@@ -76,6 +76,26 @@ class API:
         except RequestException as e:
             raise DriaRequestError(f"Request failed: {e}", f"while making a POST request to {path}")
 
+    def create(self, path: str, payload: Dict = None):
+        """
+        Send an HTTP POST request for Index API.
+
+        Args:
+            path (str): The relative path for the POST request.
+            payload (Dict, optional): The JSON payload for the POST request.
+
+        Returns:
+            Any: The parsed JSON response data.
+
+        Raises:
+            DriaRequestError: If the HTTP response status code is not 200 or if a network error occurs.
+        """
+        try:
+            response = requests.post(f'https://test.dria.co{path}', json=payload, headers=self.cfg.headers)
+            return self.parse(response, request_type="POST")
+        except RequestException as e:
+            raise DriaRequestError(f"Request failed: {e}", f"while making a POST request to {path}")
+
     def _build_url(self, path: str) -> str:
         """
         Build the complete URL based on the host and relative path.
