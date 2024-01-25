@@ -30,7 +30,8 @@ class ConfigBuilder:
                    "Accept": "*/*",
                    "x-api-key": api_key}
         if not api_key:
-            raise DriaConfigurationError("Not specified an Dria Api Key.")
+            raise DriaConfigurationError("Not specified an DRIA_API_KEY. Please set it as an environment variable or "
+                                         "pass it as an argument")
         if not host:
             raise DriaConfigurationError("You haven't specified a host.")
 

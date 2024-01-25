@@ -1,14 +1,15 @@
 # Dria Python Client
 
 ## Description
-The **Dria Python Client** is a Python library that provides convenient access to the Dria API for interacting with Dria's services. Dria is a platform for efficient vector search and retrieval, and this client allows you to integrate Dria's capabilities into your Python applications.
+The **Dria Python Client** is a powerful Python library that seamlessly integrates with the Dria API, providing a convenient interface to harness the capabilities of Dria's vector search and retrieval services. Dria is a cutting-edge platform designed to streamline your AI-powered search and data retrieval tasks, and this client empowers Python developers to leverage its full potential.
 
 ## Features
-- Search for vectors and retrieve results.
-- Perform queries using vectors and get relevant results.
-- Fetch data for specific IDs.
-- Batch insert data into Dria's knowledge base.
-- Supports different text models and options.
+- Knowledge Base Management: Create and manage knowledge bases effortlessly.
+- Vector Search: Perform vector-based searches and retrieve relevant results.
+- Query with Vectors: Utilize vector queries to obtain contextually accurate responses.
+- Data Fetching: Fetch specific data entries by their IDs.
+- Batch Data Insertion: Efficiently insert data in bulk into Dria's knowledge base.
+- Model Variety: Support for a range of text embedding models, including OpenAI's Text Embeddings and Jina's Embeddings V2.
 
 ## Installation
 To install the **Dria Python Client**, you can use pip:
@@ -19,30 +20,50 @@ pip install dria
 
 
 ## Usage
+### Querying the Existing Knowledge Base
 ```python
-from dria import DriaClient
+from dria import DriaIndex
 
-# Initialize the client with your API key
-api_key = "your_api_key_here"
-dria = DriaClient(api_key)
+# Initialize the DriaIndex instance with your API key and knowledge contract ID
+dria_index = DriaIndex(api_key="<YOUR_API_KEY>", contract_id="<KNOWLEDGE_CONTRACT_ID>")
 
-# Perform a search
-query = "What is the capital of France?"
-contract_id = "your_contract_id_here"
-top_n = 10
+# Perform a text-based search
+results = dria_index.search_query("What is the capital of France?", top_n=10)
+print(results)
 
-response = dria.search(query, contract_id, top_n)
-print(response.results)
+# Perform a vector-based query
+vector_query_results = dria_index.query_data([0.1, 0.2, 0.3], top_n=10)
+print(vector_query_results)
+
+# Fetch data for specific IDs
+fetched_data = dria_index.fetch_data([1, 2, 3])
+print(fetched_data)
+
+
 ```
 
-## Future Development
+### Create New Knowledge Base
+```python
+from dria import DriaIndex, ModelEnum
 
-- Write proper README documentation.
-- Implement unit tests for the client.
-- Write comprehensive documentation for using the client.
-- Add additional Pydantic type checks for robustness.
-- Enhance client creation and configuration options.
+# Initialize the DriaIndex instance with your API key
+dria_index = DriaIndex(api_key="<YOUR_API_KEY>")
 
+# Create a new knowledge base
+dria_index.create_index(
+    name="France's AI Development",
+    embedding=ModelEnum.jina_embeddings_v2_base_en,
+    category="Artificial Intelligence",
+    description="Explore the growth and contributions of France in the field of Artificial Intelligence."
+)
 
+```
+## Supported Embedding Models
+
+The Dria Python Client supports a variety of text embedding models, including:
+
+- OpenAI's Text Embeddings for multi-language support (text-embedding-ada-002)
+- Jina's Embeddings V2 Base EN (jina-embeddings-v2-base-en)
+- Jina's Embeddings V2 Small EN (jina-embeddings-v2-small-en)
 
 

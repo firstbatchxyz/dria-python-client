@@ -29,7 +29,7 @@ class SearchRequest(BaseModel):
     top_n: int
     field: Optional[str] = None
     model: str
-    re_rank: Optional[bool] = None
+    rerank: Optional[bool] = None
     level: Optional[int] = 2
 
     def to_json(self):

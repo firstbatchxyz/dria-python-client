@@ -24,6 +24,17 @@ class DriaParameterError(DriaException):
         super().__init__(msg)
 
 
+class DriaNetworkError(DriaException):
+    def __init__(self, msg: str):
+        """
+        Exception for API errors.
+
+        Args:
+            msg (str): The exception message.
+        """
+        super().__init__(msg)
+
+
 class DriaRequestError(DriaException):
     def __init__(self, response, request_type: str):
         """
@@ -38,6 +49,6 @@ class DriaRequestError(DriaException):
         elif response.status_code == 404:
             msg = f"Not found {response.text} while making a {request_type} function"
         else:
-            msg = f"Request failed with status code {response.status_code} while making a {request_type} function"
+            msg = f"Request failed with status code {response.status_code} while making a {request_type} function: {response.text}"
 
         super().__init__(msg)

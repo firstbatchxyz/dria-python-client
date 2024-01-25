@@ -1,7 +1,7 @@
 import requests
 from typing import Dict, Optional
 from dria.config import ConfigBuilder
-from dria.exceptions.exceptions import DriaRequestError
+from dria.exceptions.exceptions import DriaRequestError, DriaNetworkError
 from requests.exceptions import RequestException
 
 
@@ -35,12 +35,13 @@ class API:
 
         return response.json()["data"]
 
-    def get(self, path: str):
+    def get(self, path: str, host: Optional[str] = None):
         """
         Send an HTTP GET request.
 
         Args:
             path (str): The relative path for the GET request.
+            host (str): The host URL.
 
         Returns:
             Any: The parsed JSON response data.
@@ -48,19 +49,20 @@ class API:
         Raises:
             DriaRequestError: If the HTTP response status code is not 200 or if a network error occurs.
         """
-        url = self._build_url(path)
+        url = self._build_url(path, host)
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=self.cfg.headers)
             return self.parse(response, request_type="GET")
         except RequestException as e:
-            raise DriaRequestError(f"Request failed: {e}", f"while making a GET request to {path}")
+            raise DriaNetworkError(f"Request failed: {e} while making a GET request to {path}")
 
-    def post(self, path: str, payload: Dict = None):
+    def post(self, path: str, host: Optional[str] = None, payload: Dict = None):
         """
         Send an HTTP POST request.
 
         Args:
             path (str): The relative path for the POST request.
+            host (str): The host URL.
             payload (Dict, optional): The JSON payload for the POST request.
 
         Returns:
@@ -69,41 +71,23 @@ class API:
         Raises:
             DriaRequestError: If the HTTP response status code is not 200 or if a network error occurs.
         """
-        url = self._build_url(path)
+        url = self._build_url(path, host)
         try:
             response = requests.post(url, json=payload, headers=self.cfg.headers)
             return self.parse(response, request_type="POST")
         except RequestException as e:
-            raise DriaRequestError(f"Request failed: {e}", f"while making a POST request to {path}")
+            raise DriaNetworkError(f"Request failed: {e} while making a POST request to {path}")
 
-    def create(self, path: str, payload: Dict = None):
-        """
-        Send an HTTP POST request for Index API.
-
-        Args:
-            path (str): The relative path for the POST request.
-            payload (Dict, optional): The JSON payload for the POST request.
-
-        Returns:
-            Any: The parsed JSON response data.
-
-        Raises:
-            DriaRequestError: If the HTTP response status code is not 200 or if a network error occurs.
-        """
-        try:
-            response = requests.post(f'https://test.dria.co{path}', json=payload, headers=self.cfg.headers)
-            return self.parse(response, request_type="POST")
-        except RequestException as e:
-            raise DriaRequestError(f"Request failed: {e}", f"while making a POST request to {path}")
-
-    def _build_url(self, path: str) -> str:
+    def _build_url(self, path: str, host: Optional[str] = None) -> str:
         """
         Build the complete URL based on the host and relative path.
 
         Args:
             path (str): The relative path for the URL.
+            host (str): The host URL. If host is None, the default host from the configuration will be used or override.
 
         Returns:
             str: The complete URL.
         """
-        return f'https://{self.cfg.host}{path}'
+        host = host or self.cfg.host
+        return f'https://{host}{path}'

@@ -3,7 +3,7 @@ import json
 from typing import List, Dict, Tuple, Optional
 
 import dria.core.grpc.vector_pb2 as vector_pb2
-from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT
+from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT, DRIA_UTIL_HOST
 from dria.core.api.api import API
 from dria.exceptions import DriaParameterError
 from dria.models import SearchRequest, SearchResult, QueryResult
@@ -21,6 +21,7 @@ class DriaClient:
 
         self._api = API(host=DRIA_HOST, api_key=api_key)
         self._root_path = DRIA_HNSW_ROOT
+        self._utils_host = DRIA_UTIL_HOST
 
     def create(self, name: str, embedding: ModelEnum, category: str,
                description: Optional[str] = None):
@@ -48,11 +49,11 @@ class DriaClient:
         """
 
         sr = CreateIndex(name=name, embedding=embedding.value, category=category, description=description)
-        resp = self._api.create("/v1/knowledge/index/create", payload=sr.to_json())
+        resp = self._api.post("/v1/knowledge/index/create", host=DRIA_UTIL_HOST, payload=sr.to_json())
         return CreateIndexResponse(**resp)
 
     def search(self, query: str, contract_id: str, top_n: int, model: str,
-               field: Optional[str] = None, re_rank: Optional[bool] = None, level: Optional[int] = 2):
+               field: Optional[str] = None, rerank: Optional[bool] = None, level: Optional[int] = 2):
         """
         Perform a search operation.
         Args:
@@ -61,7 +62,7 @@ class DriaClient:
             top_n (int): The number of results to retrieve.
             field (Optional[str]): The field to search in (This field only for CSV sourced knowledge bases).
             model (Optional[str]): The search model to use.
-            re_rank (Optional[bool]): Whether to perform re-ranking.
+            rerank (Optional[bool]): Whether to perform re-ranking.
             level (Optional[int]): The search level.
 
         Returns:
@@ -69,7 +70,7 @@ class DriaClient:
         """
 
         sr = SearchRequest(query=query, contract_id=contract_id, top_n=top_n,
-                           field=field, model=model, re_rank=re_rank, level=level)
+                           field=field, model=model, rerank=rerank, level=level)
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
         return [SearchResult(**result).to_dict() for result in resp]
 
@@ -146,6 +147,27 @@ class DriaClient:
         br = InsertRequest(data=data, contract_id=contract_id, batch_size=len(batch))
         resp = self._api.post(self._root_path + "/insert_batch", payload=br.to_json())
         return InsertResponse(**resp)
+
+    def get_model(self, contract_id: str) -> ModelEnum:
+        """
+        Get the model of a knowledge base.
+        Args:
+            contract_id (str): The contract ID.
+        Returns:
+            str: The model of the knowledge base.
+        """
+        resp = self._api.get("/v1/knowledge/index/get_model?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
+
+        if "model" not in resp:
+            raise DriaParameterError("Invalid response from server")
+
+        def get_enum_member(value) -> ModelEnum:
+            for member in ModelEnum:
+                if member.value == value:
+                    return ModelEnum(member)
+            raise DriaParameterError("Unsupported model type")
+
+        return get_enum_member(resp["model"])
 
     @staticmethod
     def __serialize_batch(batch: List[Tuple[List[float], Dict]]):
