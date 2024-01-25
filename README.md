@@ -58,6 +58,17 @@ dria_index.create_index(
 )
 
 ```
+## Usage Example
+
+Let's try with existing knowledge base. We will use the [The Library of Alexandria](https://dria.co/knowledge/DA9F3YqTRrYEXCFhzaFgOW6jZ0NGn3PK9Q6DjuDHN0E) for this example.
+```python
+from dria import DriaIndex
+
+dria_index = DriaIndex(api_key="<YOUR_API_KEY>",
+                       contract_id="DA9F3YqTRrYEXCFhzaFgOW6jZ0NGn3PK9Q6DjuDHN0E")
+
+print(dria_index.search_query("Who found the first library catalog in the history?", top_n=10, rerank=True))
+```
 ## Supported Embedding Models
 
 The Dria Python Client supports a variety of text embedding models, including:
