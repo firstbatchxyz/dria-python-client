@@ -3,7 +3,7 @@ import json
 from typing import List, Dict, Tuple, Optional
 
 import dria.core.grpc.vector_pb2 as vector_pb2
-from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT, DRIA_UTIL_HOST
+from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT, DRIA_UTIL_HOST, DRIA_HNSW_ROOT_TRAIN
 from dria.core.api.api import API
 from dria.exceptions import DriaParameterError
 from dria.models import SearchRequest, SearchResult, QueryResult
@@ -20,6 +20,7 @@ class DriaClient:
         """
 
         self._api = API(host=DRIA_HOST, api_key=api_key)
+        self._root_path_train = DRIA_HNSW_ROOT_TRAIN
         self._root_path = DRIA_HNSW_ROOT
         self._utils_host = DRIA_UTIL_HOST
 
@@ -111,14 +112,20 @@ class DriaClient:
         fr = FetchRequest(contract_id=contract_id, id=ids)
 
         resp = self._api.post(self._root_path + "/fetch", payload=fr.model_dump())
-        return [FetchResult(id=ids[idx], metadata=json.loads(result)).to_json() for idx, result in enumerate(resp)]
+
+        if "vectors" not in resp or "metadata" not in resp:
+            raise DriaParameterError("Invalid Fetch Response from API")
+
+        return [FetchResult(vectors=resp["vectors"][idx],
+                            metadata={"id": ids[idx], "metadata": json.loads(result)}).to_json() for idx, result in
+                enumerate(resp["metadata"])]
 
     def batch_insert(self, batch: List[Dict], contract_id: str):
         """
         Batch insert data.
 
         Args:
-            batch (List[Dict]): The batch data to insert. Each dictionary should have "vectors" (List[float])
+            batch (List[Dict]): The batch data to insert. Each dictionary should have "vector" (List[float])
                                 and "metadata" (Dict). Maximum size is 1000.
             contract_id (str): The contract ID.
 
@@ -133,20 +140,20 @@ class DriaClient:
         try:
             formatted_batch = []
             for item in batch:
-                vectors = item["vectors"]
+                vector = item["vector"]
                 metadata = item["metadata"]
 
                 if not all(isinstance(value, str) for value in metadata.values()):
                     raise DriaParameterError("All values under 'metadata' should be strings")
 
-                formatted_batch.append((vectors, metadata))
+                formatted_batch.append((vector, metadata))
         except KeyError:
             raise DriaParameterError("Batch data must be a list of dictionaries with keys 'vectors' and 'metadata'")
 
         data = self.__serialize_batch(formatted_batch)
         br = InsertRequest(data=data, contract_id=contract_id, batch_size=len(batch))
-        resp = self._api.post(self._root_path + "/insert_batch", payload=br.to_json())
-        return InsertResponse(**resp)
+        resp = self._api.post(self._root_path_train + "/insert_batch", payload=br.to_json())
+        return InsertResponse(**{"message": resp})
 
     def get_model(self, contract_id: str) -> ModelEnum:
         """
@@ -163,7 +170,7 @@ class DriaClient:
 
         def get_enum_member(value) -> ModelEnum:
             for member in ModelEnum:
-                if member.value == value:
+                if member.value == value["embedding"]:
                     return ModelEnum(member)
             raise DriaParameterError("Unsupported model type")
 

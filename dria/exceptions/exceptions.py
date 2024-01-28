@@ -44,7 +44,7 @@ class DriaRequestError(DriaException):
             response: The HTTP response object.
             request_type (str): The type of the HTTP request (e.g., "GET" or "POST").
         """
-        if response.status_code == 401 or response.status_code == 403:
+        if response.status_code == 401 or response.status_code == 403 or response.status_code == 402:
             msg = f"Unauthorized request {response.text} while making a {request_type} function"
         elif response.status_code == 404:
             msg = f"Not found {response.text} while making a {request_type} function"

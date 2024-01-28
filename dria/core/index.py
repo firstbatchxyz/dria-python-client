@@ -22,6 +22,16 @@ class DriaIndex:
         if self.contract is None:
             raise DriaParameterError("Contract ID is not set. Please set the contract ID or create a new index.")
 
+    def set_contract(self, contract_id: str):
+        """
+        Set the contract ID.
+
+        Args:
+            contract_id (str): The contract ID.
+        """
+        self.contract = contract_id
+        self.model = self.client.get_model(contract_id)
+
     def create_index(self, name: str, embedding: ModelEnum, category: str, description: str = None):
         """
         Create a knowledge base index.
@@ -95,7 +105,7 @@ class DriaIndex:
         Batch insert data.
 
         Args:
-            batch (list): The batch data to insert. Each dictionary should have "vectors" (list)
+            batch (list): The batch data to insert. Each dictionary should have "vector" (list)
                           and "metadata" (dict). Maximum size is 1000.
 
         Returns:

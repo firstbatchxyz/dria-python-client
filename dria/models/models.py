@@ -10,9 +10,11 @@ from dria.exceptions import DriaParameterError
 
 
 class ModelEnum(str, Enum):
-    jina_embeddings_v2_base_en = 'jina-embeddings-v2-base-en'
-    jina_embeddings_v2_small_en = 'jina-embeddings-v2-small-en'
-    text_embedding_ada_002 = 'text-embedding-ada-002'
+    jina_embeddings_v2_base_en = 'jinaai/jina-embeddings-v2-base-en'
+    jina_embeddings_v2_small_en = 'jinaai/jina-embeddings-v2-small-en'
+    text_embedding_ada_002 = 'openai/text-embedding-ada-002'
+    text_embedding_3_small = 'openai/text-embedding-3-small'
+    text_embedding_3_large = 'openai/text-embedding-3-large'
 
 
 @dataclass_json
@@ -88,7 +90,7 @@ class QueryRequest(BaseModel):
 
 
 class FetchResult(BaseModel):
-    id: int
+    vectors: List
     metadata: Dict
 
     def to_json(self):
@@ -113,7 +115,7 @@ class InsertRequest(BaseModel):
 
 
 class InsertResponse(BaseModel):
-    id: int
+    message: str
 
 
 class CreateIndexResponse(BaseModel):
