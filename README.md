@@ -73,7 +73,9 @@ print(dria_index.search_query("Who found the first library catalog in the histor
 
 The Dria Python Client supports a variety of text embedding models, including:
 
-- OpenAI's Text Embeddings for multi-language support (text-embedding-ada-002)
+- OpenAI's Text Embeddings-2 Ada (text-embedding-ada-002)
+- OpenAI's Text Embedding-3 Small (text-embedding-3-large)
+- OpenAI's Text Embedding-3 Large (text-embedding-ada-002)
 - Jina's Embeddings V2 Base EN (jina-embeddings-v2-base-en)
 - Jina's Embeddings V2 Small EN (jina-embeddings-v2-small-en)
 

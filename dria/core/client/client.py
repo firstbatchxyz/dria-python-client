@@ -72,6 +72,7 @@ class DriaClient:
 
         sr = SearchRequest(query=query, contract_id=contract_id, top_n=top_n,
                            field=field, model=model, rerank=rerank, level=level)
+        sr.model = sr.model.split("/")[-1] if model is not None else None
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
         return [SearchResult(**result).to_dict() for result in resp]
 
