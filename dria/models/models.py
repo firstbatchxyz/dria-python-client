@@ -1,7 +1,6 @@
-import json
 from enum import Enum
 from pydantic import BaseModel, field_validator
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
@@ -9,7 +8,7 @@ from dataclasses_json import dataclass_json
 from dria.exceptions import DriaParameterError
 
 
-class ModelEnum(str, Enum):
+class Models(str, Enum):
     jina_embeddings_v2_base_en = 'jinaai/jina-embeddings-v2-base-en'
     jina_embeddings_v2_small_en = 'jinaai/jina-embeddings-v2-small-en'
     text_embedding_ada_002 = 'openai/text-embedding-ada-002'
@@ -45,7 +44,7 @@ class SearchRequest(BaseModel):
 
     @field_validator('model')
     def check_model(cls, v: str) -> str:
-        if v not in [x.value for x in ModelEnum]:
+        if v not in [x.value for x in Models]:
             raise DriaParameterError(f"'{v}' is not a valid model enum value.")
         return v
 
@@ -105,8 +104,18 @@ class FetchRequest(BaseModel):
         return self.model_dump()
 
 
-class InsertRequest(BaseModel):
+class VectorInsertRequest(BaseModel):
     data: str
+    contract_id: str
+    batch_size: int
+
+    def to_json(self):
+        return self.model_dump()
+
+
+class TextInsertRequest(BaseModel):
+    data: str
+    model: str
     contract_id: str
     batch_size: int
 

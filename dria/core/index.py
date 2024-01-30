@@ -1,14 +1,14 @@
-from typing import Optional
+from typing import Optional, Union
 
 from dria.core.client import DriaClient
 from dria.exceptions import DriaParameterError
-from dria.models.models import ModelEnum
+from dria.models.models import Models
 
 
-class DriaIndex:
+class Dria:
     def __init__(self, api_key: Optional[str] = None, contract_id: Optional[str] = None):
         """
-        Initialize the DriaIndex with an API key.
+        Initialize the Dria with an API key.
 
         Args:
             api_key (str): The API key for authentication.
@@ -32,13 +32,13 @@ class DriaIndex:
         self.contract = contract_id
         self.model = self.client.get_model(contract_id)
 
-    def create_index(self, name: str, embedding: ModelEnum, category: str, description: str = None):
+    def create_index(self, name: str, embedding: Union[Models, str], category: str, description: str = None) -> object:
         """
         Create a knowledge base index.
 
         Args:
             name (str): The name of the knowledge base.
-            embedding (str): The embedding model to use.
+            embedding (Union[Models, str]): The embedding model to use.
             category (str): The category of the knowledge base.
             description (str): The description of the knowledge base (optional).
 
@@ -100,7 +100,7 @@ class DriaIndex:
         response = self.client.fetch(ids, self.contract)
         return response
 
-    def insert_batch(self, batch: list):
+    def insert_vector(self, batch: list):
         """
         Batch insert data.
 
@@ -113,4 +113,19 @@ class DriaIndex:
         """
         self._ensure_contract()
         response = self.client.batch_insert(batch, self.contract)
+        return response
+
+    def insert_text(self, batch: list):
+        """
+        Batch insert data.
+
+        Args:
+            batch (list): The batch data to insert. Each dictionary should have "text" (str)
+                          and "metadata" (dict). Maximum size is 1000.
+
+        Returns:
+            dict: A dictionary containing the response from the batch insert method.
+        """
+        self._ensure_contract()
+        response = self.client.batch_text_insert(batch, self.model, self.contract)
         return response

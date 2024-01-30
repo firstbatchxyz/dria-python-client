@@ -18,14 +18,30 @@ To install the **Dria Python Client**, you can use pip:
 pip install dria
 ```
 
+## Supported Embedding Models
+
+The Dria Python Client supports a variety of text embedding models, including:
+
+- OpenAI's Text Embeddings-2 Ada (text-embedding-ada-002)
+- OpenAI's Text Embedding-3 Small (text-embedding-3-large)
+- OpenAI's Text Embedding-3 Large (text-embedding-ada-002)
+- Jina's Embeddings V2 Base EN (jina-embeddings-v2-base-en)
+- Jina's Embeddings V2 Small EN (jina-embeddings-v2-small-en)
+
+## Custom Embedding Models
+
+In addition to the pre-defined text embedding models, the Dria Python Client also allows you to use custom embedding models. Custom embedding models can be useful when you have specific requirements or when you want to fine-tune your text embeddings for your knowledge base.
+
+Please note that when using custom embedding models, you won't be able to perform text-based searches through the Dria API or UI. You can only perform vector-based queries using your custom embeddings.
+
 
 ## Usage
 ### Querying the Existing Knowledge Base
 ```python
-from dria import DriaIndex
+from dria import Dria
 
 # Initialize the DriaIndex instance with your API key and knowledge contract ID
-dria_index = DriaIndex(api_key="<YOUR_API_KEY>", contract_id="<KNOWLEDGE_CONTRACT_ID>")
+dria_index = Dria(api_key="<YOUR_API_KEY>", contract_id="<KNOWLEDGE_CONTRACT_ID>")
 
 # Perform a text-based search
 results = dria_index.search_query("What is the capital of France?", top_n=10)
@@ -43,16 +59,34 @@ print(fetched_data)
 ```
 
 ### Create New Knowledge Base
-```python
-from dria import DriaIndex, ModelEnum
 
-# Initialize the DriaIndex instance with your API key
-dria_index = DriaIndex(api_key="<YOUR_API_KEY>")
+#### Using Pre-defined Embedding Models
+```python
+from dria import Dria, Models
+
+# Initialize the Dria instance with your API key
+dria_index = Dria(api_key="<YOUR_API_KEY>")
 
 # Create a new knowledge base
 dria_index.create_index(
     name="France's AI Development",
-    embedding=ModelEnum.jina_embeddings_v2_base_en,
+    embedding=Models.jina_embeddings_v2_base_en,
+    category="Artificial Intelligence",
+    description="Explore the growth and contributions of France in the field of Artificial Intelligence."
+)
+
+```
+#### Using Custom Embedding Models
+```python
+from dria import Dria
+
+# Initialize the Dria instance with your API key
+dria_index = Dria(api_key="<YOUR_API_KEY>")
+
+# Create a new knowledge base
+dria_index.create_index(
+    name="France's AI Development",
+    embedding="meta-llama/Llama-2-7b",
     category="Artificial Intelligence",
     description="Explore the growth and contributions of France in the field of Artificial Intelligence."
 )
@@ -62,21 +96,11 @@ dria_index.create_index(
 
 Let's try with existing knowledge base. We will use the [The Library of Alexandria](https://dria.co/knowledge/DA9F3YqTRrYEXCFhzaFgOW6jZ0NGn3PK9Q6DjuDHN0E) for this example.
 ```python
-from dria import DriaIndex
+from dria import Dria
 
-dria_index = DriaIndex(api_key="<YOUR_API_KEY>",
+dria_index = Dria(api_key="<YOUR_API_KEY>",
                        contract_id="DA9F3YqTRrYEXCFhzaFgOW6jZ0NGn3PK9Q6DjuDHN0E")
 
 print(dria_index.search_query("Who found the first library catalog in the history?", top_n=10, rerank=True))
 ```
-## Supported Embedding Models
-
-The Dria Python Client supports a variety of text embedding models, including:
-
-- OpenAI's Text Embeddings-2 Ada (text-embedding-ada-002)
-- OpenAI's Text Embedding-3 Small (text-embedding-3-large)
-- OpenAI's Text Embedding-3 Large (text-embedding-ada-002)
-- Jina's Embeddings V2 Base EN (jina-embeddings-v2-base-en)
-- Jina's Embeddings V2 Small EN (jina-embeddings-v2-small-en)
-
 

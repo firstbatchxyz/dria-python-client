@@ -1,4 +1,4 @@
-from dria.core.index import DriaIndex, ModelEnum
+from dria.core.index import Dria, Models
 
-__all__ = ["DriaIndex", "ModelEnum"]
+__all__ = ["Dria", "Models"]
 
