@@ -124,7 +124,7 @@ class DriaClient:
                             metadata={"id": ids[idx], "metadata": json.loads(result)}).to_json() for idx, result in
                 enumerate(resp["metadata"])]
 
-    def batch_insert(self, batch: List[Dict], contract_id: str):
+    def batch_vector_insert(self, batch: List[Dict], contract_id: str):
         """
         Batch insert data.
 
@@ -147,7 +147,7 @@ class DriaClient:
                 vector = item["vector"]
                 metadata = item["metadata"]
 
-                if not all(isinstance(value, str) for value in metadata.values()):
+                if not all(isinstance(value, (str, float, int, bool)) for value in metadata.values()):
                     raise DriaParameterError("All values under 'metadata' should be strings")
 
                 formatted_batch.append((vector, metadata))
@@ -156,7 +156,7 @@ class DriaClient:
 
         data = self._converter.serialize_batch_vec(formatted_batch)
         br = VectorInsertRequest(data=data, contract_id=contract_id, batch_size=len(batch))
-        resp = self._api.post(self._root_path_train + "/insert_batch", payload=br.to_json())
+        resp = self._api.post(self._root_path_train + "/insert_vector", payload=br.to_json())
         return InsertResponse(**{"message": resp})
 
     def batch_text_insert(self, batch: List[Dict], model: Union[Models, str], contract_id: str):
@@ -185,7 +185,7 @@ class DriaClient:
                 text = item["text"]
                 metadata = item["metadata"]
 
-                if not all(isinstance(value, str) for value in metadata.values()):
+                if not all(isinstance(value, (str, float, int, bool)) for value in metadata.values()):
                     raise DriaParameterError("All values under 'metadata' should be strings")
 
                 formatted_batch.append((text, metadata))
@@ -194,7 +194,7 @@ class DriaClient:
 
         data = self._converter.serialize_batch_str(formatted_batch)
         br = TextInsertRequest(data=data, model=model, contract_id=contract_id, batch_size=len(batch))
-        resp = self._api.post(self._root_path_train + "/insert_batch_text", payload=br.to_json())
+        resp = self._api.post(self._root_path_train + "/insert_text", payload=br.to_json())
         return InsertResponse(**{"message": resp})
 
     def get_model(self, contract_id: str) -> Union[Models, str]:

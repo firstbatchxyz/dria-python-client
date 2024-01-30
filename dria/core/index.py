@@ -110,7 +110,7 @@ class Dria:
             InsertResponse: A response containing the response from the batch insert method.
         """
         self._ensure_contract()
-        response = self.client.batch_insert(batch, self.contract)
+        response = self.client.batch_vector_insert(batch, self.contract)
         return response
 
     def insert_text(self, batch: list):
