@@ -42,8 +42,6 @@ class Dria:
             category (str): The category of the knowledge base.
             description (str): The description of the knowledge base (optional).
 
-        Returns:
-            dict: A dictionary containing the response from the create method.
         """
         response = self.client.create(name, embedding, category, description)
         self.contract = response.contract_id
@@ -61,7 +59,7 @@ class Dria:
             level (int): The search level.
 
         Returns:
-            dict: A dictionary containing the response from the search method.
+            List[SearchResponse]: A list containing the response from the search method.
 
         Example:
             dria.search("What is the capital of France?", top_n=10)
@@ -80,7 +78,7 @@ class Dria:
             top_n (int): The number of results to retrieve.
 
         Returns:
-            dict: A dictionary containing the response from the query method.
+            List[QueryResult]: A list containing the response from the query method.
         """
         self._ensure_contract()
         response = self.client.query(vector, self.contract, top_n)
@@ -94,7 +92,7 @@ class Dria:
             ids (list): The list of IDs to fetch.
 
         Returns:
-            dict: A dictionary containing the response from the fetch method.
+            List[FetchResult]: A list containing the response from the fetch method.
         """
         self._ensure_contract()
         response = self.client.fetch(ids, self.contract)
@@ -109,7 +107,7 @@ class Dria:
                           and "metadata" (dict). Maximum size is 1000.
 
         Returns:
-            dict: A dictionary containing the response from the batch insert method.
+            InsertResponse: A response containing the response from the batch insert method.
         """
         self._ensure_contract()
         response = self.client.batch_insert(batch, self.contract)
@@ -124,7 +122,7 @@ class Dria:
                           and "metadata" (dict). Maximum size is 1000.
 
         Returns:
-            dict: A dictionary containing the response from the batch insert method.
+            InsertResponse: A dictionary containing the response from the batch insert with method.
         """
         self._ensure_contract()
         response = self.client.batch_text_insert(batch, self.model, self.contract)

@@ -91,7 +91,7 @@ class DriaClient:
             dria.query([0.1, 0.2, 0.3], "<CONTRACT_ID>", top_n=10)
 
         Returns:
-            QueryResponse: The query response.
+            QueryResult: The query response.
         """
 
         qr = QueryRequest(vector=vector, contract_id=contract_id, top_n=top_n)
@@ -110,7 +110,7 @@ class DriaClient:
             dria.fetch([1, 2, 3], "<CONTRACT_ID>")
 
         Returns:
-            FetchResponse: The fetch response.
+            FetchResult: The fetch result.
         """
 
         fr = FetchRequest(contract_id=contract_id, id=ids)
