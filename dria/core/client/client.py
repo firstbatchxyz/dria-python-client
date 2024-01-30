@@ -197,7 +197,7 @@ class DriaClient:
         resp = self._api.post(self._root_path_train + "/insert_batch_text", payload=br.to_json())
         return InsertResponse(**{"message": resp})
 
-    def get_model(self, contract_id: str) -> Models:
+    def get_model(self, contract_id: str) -> Union[Models, str]:
         """
         Get the model of a knowledge base.
         Args:
@@ -214,6 +214,6 @@ class DriaClient:
             for member in Models:
                 if member.value == value["embedding"]:
                     return Models(member)
-            raise DriaParameterError("Unsupported model type")
+            return value["embedding"]
 
         return get_enum_member(resp["model"])
