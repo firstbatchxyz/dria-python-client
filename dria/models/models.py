@@ -77,6 +77,7 @@ class QueryRequest(BaseModel):
     vector: List[float]
     contract_id: str
     top_n: int = 10
+    level: int = 2
 
     def to_json(self):
         return self.model_dump()

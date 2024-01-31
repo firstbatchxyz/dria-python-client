@@ -69,19 +69,20 @@ class Dria:
         response = self.client.search(query, self.contract, top_n, self.model, field, rerank, level)
         return response
 
-    def query_data(self, vector: list, top_n: int = 10):
+    def query_data(self, vector: list, top_n: int = 10, level: int = 2):
         """
         Perform a query operation.
 
         Args:
             vector (list): The query vector.
             top_n (int): The number of results to retrieve.
+            level (int): The search level.
 
         Returns:
             List[QueryResult]: A list containing the response from the query method.
         """
         self._ensure_contract()
-        response = self.client.query(vector, self.contract, top_n)
+        response = self.client.query(vector, self.contract, top_n, level)
         return response
 
     def fetch_data(self, ids: list):

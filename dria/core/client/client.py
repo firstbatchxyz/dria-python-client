@@ -27,7 +27,7 @@ class DriaClient:
     def create(self, name: str, embedding: Union[Models, str], category: str,
                description: Optional[str] = None):
         """
-        Perform a search operation.
+        Perform a create index operation.
         Args:
             description (Optional[str]): The description of the knowledge base.
             category (str): The category of the knowledge base.
@@ -79,13 +79,14 @@ class DriaClient:
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
         return [SearchResult(**result).to_dict() for result in resp]
 
-    def query(self, vector: List[float], contract_id: str, top_n: int = 10):
+    def query(self, vector: List[float], contract_id: str, top_n: int = 10, level: int = 2):
         """
         Perform a query operation.
         Args:
             vector (List[float]): The query vector.
             contract_id (str): The contract ID.
             top_n (int): The number of results to retrieve.
+            level (int): The search level.
 
         Example:
             dria.query([0.1, 0.2, 0.3], "<CONTRACT_ID>", top_n=10)
@@ -94,10 +95,11 @@ class DriaClient:
             QueryResult: The query response.
         """
 
-        qr = QueryRequest(vector=vector, contract_id=contract_id, top_n=top_n)
+        qr = QueryRequest(vector=vector, contract_id=contract_id, top_n=top_n, level=level)
 
         resp = self._api.post(self._root_path + "/query", payload=qr.model_dump())
-        return [QueryResult(**result).to_dict() for result in resp]
+        return [QueryResult(**{"id": result["id"], "score": result["score"],
+                             "metadata": json.loads(result["metadata"])}).to_dict() for result in resp]
 
     def fetch(self, ids: List[int], contract_id: str):
         """
