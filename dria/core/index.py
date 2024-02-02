@@ -32,7 +32,7 @@ class Dria:
         self.contract = contract_id
         self.model = self.client.get_model(contract_id)
 
-    def create(self, name: str, embedding: Union[Models, str], category: str, description: str = None) -> object:
+    def create(self, name: str, embedding: Union[Models, str], category: str, description: str = None) -> str:
         """
         Create a knowledge base index.
 
@@ -46,6 +46,7 @@ class Dria:
         response = self.client.create(name, embedding, category, description)
         self.contract = response.contract_id
         self.model = embedding
+        return self.contract
 
     def search(self, query: str, top_n: int = 10, field: str = None, rerank: bool = None, level: int = 2):
         """
@@ -97,6 +98,19 @@ class Dria:
         """
         self._ensure_contract()
         response = self.client.fetch(ids, self.contract)
+        return response
+
+    def remove(self):
+        """
+        Remove the knowledge base index.
+
+        Returns:
+            RemoveResponse: A response containing the response from the remove method.
+
+        """
+
+        self._ensure_contract()
+        response = self.client.remove(self.contract)
         return response
 
     def insert_vector(self, batch: list):

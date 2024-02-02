@@ -98,7 +98,7 @@ class DriaClient:
 
         resp = self._api.post(self._root_path + "/query", payload=qr.model_dump())
         return [QueryResult(**{"id": result["id"], "score": result["score"],
-                             "metadata": json.loads(result["metadata"])}).to_dict() for result in resp]
+                               "metadata": json.loads(result["metadata"])}).to_dict() for result in resp]
 
     def fetch(self, ids: List[int], contract_id: str):
         """
@@ -124,6 +124,22 @@ class DriaClient:
         return [FetchResult(vectors=resp["vectors"][idx],
                             metadata={"id": ids[idx], "metadata": json.loads(result)}).to_json() for idx, result in
                 enumerate(resp["metadata"])]
+
+    def remove(self, contract_id: str):
+        """
+        Remove a knowledge base.
+        Args:
+            contract_id (str): The contract ID.
+
+        Example:
+            dria.remove("<CONTRACT_ID>")
+
+        Returns: The response from the remove operation.
+
+        """
+
+        resp = self._api.post("/v1/knowledge/remove?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
+        return resp
 
     def batch_vector_insert(self, batch: List[Dict], contract_id: str):
         """
@@ -215,6 +231,6 @@ class DriaClient:
             for member in Models:
                 if member.value == value:
                     return Models(member)
-            return value["embedding"]
+            return value
 
         return get_enum_member(resp["model"])
