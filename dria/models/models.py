@@ -9,11 +9,11 @@ from dria.exceptions import DriaParameterError
 
 
 class Models(str, Enum):
-    jina_embeddings_v2_base_en = 'jinaai/jina-embeddings-v2-base-en'
-    jina_embeddings_v2_small_en = 'jinaai/jina-embeddings-v2-small-en'
-    text_embedding_ada_002 = 'openai/text-embedding-ada-002'
-    text_embedding_3_small = 'openai/text-embedding-3-small'
-    text_embedding_3_large = 'openai/text-embedding-3-large'
+    jina_embeddings_v2_base_en = 'jina-embeddings-v2-base-en'
+    jina_embeddings_v2_small_en = 'jina-embeddings-v2-small-en'
+    text_embedding_ada_002 = 'text-embedding-ada-002'
+    text_embedding_3_small = 'text-embedding-3-small'
+    text_embedding_3_large = 'text-embedding-3-large'
 
 
 @dataclass_json
@@ -50,7 +50,7 @@ class SearchRequest(BaseModel):
 
     @field_validator('level')
     def check_level(cls, v: int) -> int:
-        if v not in [1, 2, 3, 4]:
+        if v not in [0, 1, 2, 3, 4]:
             raise DriaParameterError(f"'{v}' is not a valid level value")
         return v
 

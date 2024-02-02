@@ -44,15 +44,15 @@ from dria import Dria
 dria_index = Dria(api_key="<YOUR_API_KEY>", contract_id="<KNOWLEDGE_CONTRACT_ID>")
 
 # Perform a text-based search
-results = dria_index.search_query("What is the capital of France?", top_n=10)
+results = dria_index.search("What is the capital of France?", top_n=10)
 print(results)
 
 # Perform a vector-based query
-vector_query_results = dria_index.query_data([0.1, 0.2, 0.3], top_n=10)
+vector_query_results = dria_index.query([0.1, 0.2, 0.3], top_n=10)
 print(vector_query_results)
 
 # Fetch data for specific IDs
-fetched_data = dria_index.fetch_data([1, 2, 3])
+fetched_data = dria_index.fetch([1, 2, 3])
 print(fetched_data)
 
 
@@ -68,7 +68,7 @@ from dria import Dria, Models
 dria_index = Dria(api_key="<YOUR_API_KEY>")
 
 # Create a new knowledge base
-dria_index.create_index(
+dria_index.create(
     name="France's AI Development",
     embedding=Models.jina_embeddings_v2_base_en,
     category="Artificial Intelligence",
@@ -84,7 +84,7 @@ from dria import Dria
 dria_index = Dria(api_key="<YOUR_API_KEY>")
 
 # Create a new knowledge base
-dria_index.create_index(
+dria_index.create(
     name="France's AI Development",
     embedding="meta-llama/Llama-2-7b",
     category="Artificial Intelligence",
@@ -101,6 +101,6 @@ from dria import Dria
 dria_index = Dria(api_key="<YOUR_API_KEY>",
                        contract_id="DA9F3YqTRrYEXCFhzaFgOW6jZ0NGn3PK9Q6DjuDHN0E")
 
-print(dria_index.search_query("Who found the first library catalog in the history?", top_n=10, rerank=True))
+print(dria_index.search("Who found the first library catalog in the history?", top_n=10, rerank=True))
 ```
 

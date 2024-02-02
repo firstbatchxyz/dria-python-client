@@ -32,7 +32,7 @@ class Dria:
         self.contract = contract_id
         self.model = self.client.get_model(contract_id)
 
-    def create_index(self, name: str, embedding: Union[Models, str], category: str, description: str = None) -> object:
+    def create(self, name: str, embedding: Union[Models, str], category: str, description: str = None) -> object:
         """
         Create a knowledge base index.
 
@@ -47,7 +47,7 @@ class Dria:
         self.contract = response.contract_id
         self.model = embedding
 
-    def search_query(self, query: str, top_n: int, field: str = None, rerank: bool = None, level: int = 2):
+    def search(self, query: str, top_n: int = 10, field: str = None, rerank: bool = None, level: int = 2):
         """
         Perform a search operation.
 
@@ -69,7 +69,7 @@ class Dria:
         response = self.client.search(query, self.contract, top_n, self.model, field, rerank, level)
         return response
 
-    def query_data(self, vector: list, top_n: int = 10, level: int = 2):
+    def query(self, vector: list, top_n: int = 10, level: int = 2):
         """
         Perform a query operation.
 
@@ -85,7 +85,7 @@ class Dria:
         response = self.client.query(vector, self.contract, top_n, level)
         return response
 
-    def fetch_data(self, ids: list):
+    def fetch(self, ids: list):
         """
         Fetch data for a list of IDs.
 

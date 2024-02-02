@@ -75,7 +75,6 @@ class DriaClient:
 
         sr = SearchRequest(query=query, contract_id=contract_id, top_n=top_n,
                            field=field, model=model, rerank=rerank, level=level)
-        sr.model = sr.model.split("/")[-1] if model is not None else None
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
         return [SearchResult(**result).to_dict() for result in resp]
 
@@ -150,7 +149,7 @@ class DriaClient:
                 metadata = item["metadata"]
 
                 if not all(isinstance(value, (str, float, int, bool)) for value in metadata.values()):
-                    raise DriaParameterError("All values under 'metadata' should be strings")
+                    raise DriaParameterError("All values under 'metadata' should be specified value")
 
                 formatted_batch.append((vector, metadata))
         except KeyError:
@@ -188,7 +187,7 @@ class DriaClient:
                 metadata = item["metadata"]
 
                 if not all(isinstance(value, (str, float, int, bool)) for value in metadata.values()):
-                    raise DriaParameterError("All values under 'metadata' should be strings")
+                    raise DriaParameterError("All values under 'metadata' should be specified value")
 
                 formatted_batch.append((text, metadata))
         except KeyError:
@@ -214,7 +213,7 @@ class DriaClient:
 
         def get_enum_member(value) -> Models:
             for member in Models:
-                if member.value == value["embedding"]:
+                if member.value == value:
                     return Models(member)
             return value["embedding"]
 
