@@ -114,6 +114,9 @@ class DriaClient:
             FetchResult: The fetch result.
         """
 
+        if not ids:
+            raise DriaParameterError("No IDs provided")
+
         fr = FetchRequest(contract_id=contract_id, id=ids)
 
         resp = self._api.post(self._root_path + "/fetch", payload=fr.model_dump())
@@ -138,7 +141,7 @@ class DriaClient:
 
         """
 
-        resp = self._api.post("/v1/knowledge/remove?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
+        resp = self._api.post("/v1/knowledge/remove",  payload={"contract_id": contract_id}, host=DRIA_UTIL_HOST)
         return resp
 
     def batch_vector_insert(self, batch: List[Dict], contract_id: str):
