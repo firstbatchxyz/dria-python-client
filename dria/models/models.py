@@ -130,3 +130,14 @@ class InsertResponse(BaseModel):
 
 class CreateIndexResponse(BaseModel):
     contract_id: str
+
+
+class ContractDefinition(BaseModel):
+    contract_id: str
+    name: str
+    description: str
+    category: str
+
+
+class ListContracts(BaseModel):
+    contracts: List[ContractDefinition]

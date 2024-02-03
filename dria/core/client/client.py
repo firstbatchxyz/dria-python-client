@@ -7,7 +7,7 @@ from dria.core.proto.serialization import ProtoBufConverter
 from dria.exceptions import DriaParameterError
 from dria.models import SearchRequest, SearchResult, QueryResult
 from dria.models.models import FetchRequest, InsertResponse, Models, CreateIndex, CreateIndexResponse, \
-    QueryRequest, FetchResult, TextInsertRequest, VectorInsertRequest
+    QueryRequest, FetchResult, TextInsertRequest, VectorInsertRequest, ListContracts
 
 
 class DriaClient:
@@ -168,7 +168,7 @@ class DriaClient:
                 metadata = item["metadata"]
 
                 if not all(isinstance(value, (str, float, int, bool)) for value in metadata.values()):
-                    raise DriaParameterError("All values under 'metadata' should be specified value")
+                    raise DriaParameterError("All values under 'metadata' should be string, float, int or bool")
 
                 formatted_batch.append((vector, metadata))
         except KeyError:
@@ -206,7 +206,7 @@ class DriaClient:
                 metadata = item["metadata"]
 
                 if not all(isinstance(value, (str, float, int, bool)) for value in metadata.values()):
-                    raise DriaParameterError("All values under 'metadata' should be specified value")
+                    raise DriaParameterError("All values under 'metadata' should be string, float, int or bool")
 
                 formatted_batch.append((text, metadata))
         except KeyError:
@@ -237,3 +237,13 @@ class DriaClient:
             return value
 
         return get_enum_member(resp["model"])
+
+    def list_contracts(self) -> Dict:
+        """
+        Get a list of all knowledge bases.
+
+        Returns:
+            ListContracts: A response containing the contract id list.
+        """
+        resp = self._api.get("/v1/knowledge/list", host=DRIA_UTIL_HOST)
+        return ListContracts(**resp).model_dump()

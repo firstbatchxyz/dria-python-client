@@ -113,6 +113,18 @@ class Dria:
         response = self.client.remove(self.contract)
         return response
 
+    def list(self) -> list:
+        """
+        List all knowledge bases.
+
+        Returns:
+            List: A response containing the contract definitions.
+
+        """
+
+        response = self.client.list_contracts()
+        return response["contracts"]
+
     def insert_vector(self, batch: list):
         """
         Batch insert data.

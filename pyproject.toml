@@ -1,13 +1,15 @@
 [tool.poetry]
 name = "dria"
-version = "0.1.1"
+version = "0.1.4"
 description = "A Python client for the Dria API."
 authors = ["Anil Berk Altuner <anil@firstbatch.xyz>", "Omer Kaya <omer@firstbatch.xyz>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 requests = "^2.25.1"
+dataclasses-json = "^0.6.4"
+pydantic = "^2.6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

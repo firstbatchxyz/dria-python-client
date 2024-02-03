@@ -5,7 +5,10 @@ The **Dria Python Client** is a powerful Python library that seamlessly integrat
 
 ## Features
 - Knowledge Base Management: Create and manage knowledge bases effortlessly.
+- Data Upload with Text: Choose your embedding model and upload data with text.
 - Vector Search: Perform vector-based searches and retrieve relevant results.
+- Multi Region Support: Access Dria's services from multiple regions.
+- Text-based Search: Perform text-based searches and retrieve relevant results.
 - Query with Vectors: Utilize vector queries to obtain contextually accurate responses.
 - Data Fetching: Fetch specific data entries by their IDs.
 - Batch Data Insertion: Efficiently insert data in bulk into Dria's knowledge base.
@@ -17,6 +20,9 @@ To install the **Dria Python Client**, you can use pip:
 ```bash
 pip install dria
 ```
+
+### Accessing the Dria API
+To use the Dria Python Client, you need to have an API key. You can obtain your API key by signing up on the [Dria](https://dria.co/) and also you can get 500 free credits for upload data and use the API.
 
 ## Supported Embedding Models
 
@@ -68,12 +74,14 @@ from dria import Dria, Models
 dria_index = Dria(api_key="<YOUR_API_KEY>")
 
 # Create a new knowledge base
-dria_index.create(
+contract_id = dria_index.create(
     name="France's AI Development",
     embedding=Models.jina_embeddings_v2_base_en,
     category="Artificial Intelligence",
     description="Explore the growth and contributions of France in the field of Artificial Intelligence."
 )
+
+print(contract_id)
 
 ```
 #### Using Custom Embedding Models
@@ -84,16 +92,76 @@ from dria import Dria
 dria_index = Dria(api_key="<YOUR_API_KEY>")
 
 # Create a new knowledge base
-dria_index.create(
+contract_id = dria_index.create(
     name="France's AI Development",
-    embedding="meta-llama/Llama-2-7b",
+    embedding="intfloat/e5-mistral-7b-instruct",
     category="Artificial Intelligence",
     description="Explore the growth and contributions of France in the field of Artificial Intelligence."
 )
 
+print(contract_id)
+
 ```
 ## Usage Example
 
+### Create a new knowledge base and insert data
+```python
+from dria import Dria, Models
+
+# Initialize the Dria instance with your API key
+dria_index = Dria(api_key="<YOUR_API_KEY>")
+
+# Create a new knowledge base
+contract_id = dria_index.create(
+    name="France's AI Development",
+    embedding=Models.jina_embeddings_v2_base_en,
+    category="Artificial Intelligence",
+    description="Explore the growth and contributions of France in the field of Artificial Intelligence."
+)
+
+# Insert data into the knowledge base
+data = [
+    {
+        "text": "The Rise of AI in France",
+        "metadata": {
+            "author": "John Doe",
+            "date": "2022-01-01",
+            "source": "AI Magazine"
+        }
+    },
+    {
+        "text": "France's AI Research and Development",
+        "metadata": {
+            "author": "Jane Smith",
+            "date": "2022-01-15",
+            "source": "Tech News"
+        }
+    }]
+response = dria_index.insert_text(data)
+print(response)
+
+search_results = dria_index.search("AI in France", top_n=1, level=0)
+
+```
+### Query to latest uploaded knowledge base
+```python
+from dria import Dria
+
+
+dria_index = Dria(api_key="<YOUR API KEY>")
+
+# Get the list of knowledge bases
+knowledges = dria_index.list()
+
+# Set the contract ID
+dria_index.set_contract(knowledges[-1]["contract_id"])
+
+# Insert a new knowledge
+dria_index.insert_text([{"text": "Testing latest knowledge...", "metadata": {"name": "Test"}}])
+
+# Search for the knowledge
+print(dria_index.search("Testing latest knowledge...", top_n=1, rerank=True))
+```
 Let's try with existing knowledge base. We will use the [The Library of Alexandria](https://dria.co/knowledge/DA9F3YqTRrYEXCFhzaFgOW6jZ0NGn3PK9Q6DjuDHN0E) for this example.
 ```python
 from dria import Dria
