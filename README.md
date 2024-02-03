@@ -14,7 +14,7 @@
 
 <p align="center">
     <a href="https://pypi.org/project/dria" target="_blank">
-        <img alt="PyPI" src="https://badge.fury.io/py/driapy.svg">
+        <img alt="PyPI" src="https://badge.fury.io/py/dria.svg">
     </a>
 </p>
 
