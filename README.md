@@ -1,4 +1,22 @@
-# Dria Python Client
+<p align="center">
+  <!-- <img src="logo.svg" alt="logo" width="142"> -->
+  <img src="./logo.svg" alt="logo" width="142">
+</p>
+
+<p align="center">
+  <h1 align="center">
+    Dria
+  </h1>
+  <p align="center">
+    <i>Dria Python client.</i>
+  </p>
+</p>
+
+<p align="center">
+    <a href="https://pypi.org/project/dria" target="_blank">
+        <img alt="PyPI" src="https://badge.fury.io/py/driapy.svg">
+    </a>
+</p>
 
 ## Description
 The **Dria Python Client** is a powerful Python library that seamlessly integrates with the Dria API, providing a convenient interface to harness the capabilities of Dria's vector search and retrieval services. Dria is a cutting-edge platform designed to streamline your AI-powered search and data retrieval tasks, and this client empowers Python developers to leverage its full potential.
