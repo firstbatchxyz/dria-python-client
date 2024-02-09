@@ -72,11 +72,12 @@ class DriaClient:
         Returns:
             QueryResponse: The query response.
         """
-
         sr = SearchRequest(query=query, contract_id=contract_id, top_n=top_n,
                            field=field, model=model, rerank=rerank, level=level)
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
-        return [SearchResult(**result).to_dict() for result in resp]
+        return [SearchResult(id=result["id"], score=result["score"],
+                             metadata=(result["metadata"]
+                                       if rerank else json.loads(result["metadata"])["text"])).to_dict() for result in resp]
 
     def query(self, vector: List[float], contract_id: str, top_n: int = 10, level: int = 2):
         """
@@ -141,7 +142,7 @@ class DriaClient:
 
         """
 
-        resp = self._api.post("/v1/knowledge/remove",  payload={"contract_id": contract_id}, host=DRIA_UTIL_HOST)
+        resp = self._api.post("/v1/knowledge/remove", payload={"contract_id": contract_id}, host=DRIA_UTIL_HOST)
         return resp
 
     def batch_vector_insert(self, batch: List[Dict], contract_id: str):

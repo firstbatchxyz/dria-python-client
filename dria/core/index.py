@@ -48,7 +48,7 @@ class Dria:
         self.model = embedding
         return self.contract
 
-    def search(self, query: str, top_n: int = 10, field: str = None, rerank: bool = None, level: int = 2):
+    def search(self, query: str, top_n: int = 10, field: str = None, rerank: bool = True, level: int = 2):
         """
         Perform a search operation.
 

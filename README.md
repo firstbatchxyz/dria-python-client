@@ -51,6 +51,7 @@ The Dria Python Client supports a variety of text embedding models, including:
 - OpenAI's Text Embedding-3 Large (text-embedding-ada-002)
 - Jina's Embeddings V2 Base EN (jina-embeddings-v2-base-en)
 - Jina's Embeddings V2 Small EN (jina-embeddings-v2-small-en)
+- BAAI/bge-large-en-1.5
 
 ## Custom Embedding Models
 

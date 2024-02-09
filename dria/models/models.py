@@ -14,6 +14,7 @@ class Models(str, Enum):
     text_embedding_ada_002 = 'text-embedding-ada-002'
     text_embedding_3_small = 'text-embedding-3-small'
     text_embedding_3_large = 'text-embedding-3-large'
+    bge_base_en = 'BAAI/bge-base-en-v1.5'
 
 
 @dataclass_json
