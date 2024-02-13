@@ -1,7 +1,7 @@
 import json
 from typing import List, Dict, Optional, Union
 
-from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT, DRIA_UTIL_HOST, DRIA_HNSW_ROOT_TRAIN
+from dria.constants import DRIA_HOST, DRIA_HNSW_ROOT, DRIA_UTIL_HOST, DRIA_HNSW_ROOT_TRAIN, DRIA_HOST_TRAIN
 from dria.core.api.api import API
 from dria.core.proto.serialization import ProtoBufConverter
 from dria.exceptions import DriaParameterError
@@ -77,7 +77,8 @@ class DriaClient:
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
         return [SearchResult(id=result["id"], score=result["score"],
                              metadata=(result["metadata"]
-                                       if rerank else json.loads(result["metadata"])["text"])).to_dict() for result in resp]
+                                       if rerank else json.loads(result["metadata"])["text"])).to_dict() for result in
+                resp]
 
     def query(self, vector: List[float], contract_id: str, top_n: int = 10, level: int = 2):
         """
@@ -145,13 +146,14 @@ class DriaClient:
         resp = self._api.post("/v1/knowledge/remove", payload={"contract_id": contract_id}, host=DRIA_UTIL_HOST)
         return resp
 
-    def batch_vector_insert(self, batch: List[Dict], contract_id: str):
+    def batch_vector_insert(self, batch: List[Dict], write_blockchain: bool, contract_id: str):
         """
         Batch insert data.
 
         Args:
             batch (List[Dict]): The batch data to insert. Each dictionary should have "vector" (List[float])
                                 and "metadata" (Dict). Maximum size is 1000.
+            write_blockchain (bool): Whether to write to the blockchain.
             contract_id (str): The contract ID.
 
         Returns:
@@ -176,17 +178,19 @@ class DriaClient:
             raise DriaParameterError("Batch data must be a list of dictionaries with keys 'vectors' and 'metadata'")
 
         data = self._converter.serialize_batch_vec(formatted_batch)
-        br = VectorInsertRequest(data=data, contract_id=contract_id, batch_size=len(batch))
-        resp = self._api.post(self._root_path_train + "/insert_vector", payload=br.to_json())
+        br = VectorInsertRequest(data=data, write_blockchain=write_blockchain,
+                                 contract_id=contract_id, batch_size=len(batch))
+        resp = self._api.post(self._root_path_train + "/insert_vector", payload=br.to_json(), host=DRIA_HOST_TRAIN)
         return InsertResponse(**{"message": resp})
 
-    def batch_text_insert(self, batch: List[Dict], model: Union[Models, str], contract_id: str):
+    def batch_text_insert(self, batch: List[Dict], write_blockchain: bool, model: Union[Models, str], contract_id: str):
         """
         Batch insert with text data.
 
         Args:
             batch (List[Dict]): The batch data to insert. Each dictionary should have "text" (str)
                                 and "metadata" (Dict). Maximum size is 1000.
+            write_blockchain (bool): Whether to write to the blockchain.
             model (Union[Models, str]): The embedding model to use.
             contract_id (str): The contract ID.
 
@@ -214,8 +218,9 @@ class DriaClient:
             raise DriaParameterError("Batch data must be a list of dictionaries with keys 'text' and 'metadata'")
 
         data = self._converter.serialize_batch_str(formatted_batch)
-        br = TextInsertRequest(data=data, model=model, contract_id=contract_id, batch_size=len(batch))
-        resp = self._api.post(self._root_path_train + "/insert_text", payload=br.to_json())
+        br = TextInsertRequest(data=data, write_blockchain=write_blockchain,
+                               model=model, contract_id=contract_id, batch_size=len(batch))
+        resp = self._api.post(self._root_path_train + "/insert_text", payload=br.to_json(), host=DRIA_HOST_TRAIN)
         return InsertResponse(**{"message": resp})
 
     def get_model(self, contract_id: str) -> Union[Models, str]:

@@ -125,32 +125,34 @@ class Dria:
         response = self.client.list_contracts()
         return response["contracts"]
 
-    def insert_vector(self, batch: list):
+    def insert_vector(self, batch: list, write_blockchain: bool = True):
         """
         Batch insert data.
 
         Args:
             batch (list): The batch data to insert. Each dictionary should have "vector" (list)
                           and "metadata" (dict). Maximum size is 1000.
+            write_blockchain (bool): Whether to write to the blockchain.
 
         Returns:
             InsertResponse: A response containing the response from the batch insert method.
         """
         self._ensure_contract()
-        response = self.client.batch_vector_insert(batch, self.contract)
+        response = self.client.batch_vector_insert(batch, write_blockchain, self.contract)
         return response
 
-    def insert_text(self, batch: list):
+    def insert_text(self, batch: list, write_blockchain: bool = True):
         """
         Batch insert data.
 
         Args:
             batch (list): The batch data to insert. Each dictionary should have "text" (str)
                           and "metadata" (dict). Maximum size is 1000.
+            write_blockchain (bool): Whether to write to the blockchain.
 
         Returns:
             InsertResponse: A dictionary containing the response from the batch insert with method.
         """
         self._ensure_contract()
-        response = self.client.batch_text_insert(batch, self.model, self.contract)
+        response = self.client.batch_text_insert(batch, write_blockchain,  self.model, self.contract)
         return response

@@ -15,6 +15,7 @@ class Models(str, Enum):
     text_embedding_3_small = 'text-embedding-3-small'
     text_embedding_3_large = 'text-embedding-3-large'
     bge_base_en = 'BAAI/bge-base-en-v1.5'
+    bge_base_large = 'BAAI/bge-large-en-v1.5'
 
 
 @dataclass_json
@@ -108,6 +109,7 @@ class FetchRequest(BaseModel):
 
 class VectorInsertRequest(BaseModel):
     data: str
+    write_blockchain: bool
     contract_id: str
     batch_size: int
 
@@ -117,6 +119,7 @@ class VectorInsertRequest(BaseModel):
 
 class TextInsertRequest(BaseModel):
     data: str
+    write_blockchain: bool
     model: str
     contract_id: str
     batch_size: int
