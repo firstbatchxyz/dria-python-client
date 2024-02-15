@@ -77,7 +77,7 @@ class DriaClient:
         resp = self._api.post(self._root_path + "/search", payload=sr.to_json())
         return [SearchResult(id=result["id"], score=result["score"],
                              metadata=(result["metadata"]
-                                       if rerank else json.loads(result["metadata"])["text"])).to_dict() for result in
+                                       if rerank else json.loads(result["metadata"]))).to_dict() for result in
                 resp]
 
     def query(self, vector: List[float], contract_id: str, top_n: int = 10, level: int = 2):
