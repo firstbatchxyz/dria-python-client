@@ -142,6 +142,9 @@ class ContractDefinition(BaseModel):
     description: str
     category: str
 
+    def to_json(self):
+        return self.model_dump()
+
 
 class ListContracts(BaseModel):
     contracts: List[ContractDefinition]

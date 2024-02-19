@@ -125,6 +125,41 @@ class Dria:
         response = self.client.list_contracts()
         return response["contracts"]
 
+    def get_contract(self, contract_id: str):
+        """
+        Get the contract details.
+
+        Args:
+            contract_id (str): The contract ID.
+
+        Returns:
+            ContractResponse: A response containing the contract details.
+        """
+        response = self.client.get_contract(contract_id)
+        return response
+
+    def update(self, **kwargs):
+        """
+        Update the knowledge base index.
+
+        Only specific fields can be updated. The fields that can be updated are:
+        - name
+        - description
+        - category
+
+        So, the kwargs should contain one or more of these fields.
+
+        Args:
+            **kwargs: The arguments to update.
+
+
+        Returns:
+            UpdateResponse: A response containing the response from the update method.
+        """
+        self._ensure_contract()
+        response = self.client.update_knowledge_base(self.contract, **kwargs)
+        return response
+
     def insert_vector(self, batch: list, write_blockchain: bool = True):
         """
         Batch insert data.

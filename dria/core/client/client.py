@@ -253,3 +253,46 @@ class DriaClient:
         """
         resp = self._api.get("/v1/knowledge/list", host=DRIA_UTIL_HOST)
         return ListContracts(**resp).model_dump()
+
+    def get_contract(self, contract_id: str):
+        """
+        Get the contract details.
+
+        Args:
+            contract_id (str): The contract ID.
+
+        Returns:
+            ContractResponse: A response containing the contract details.
+        """
+        resp = self._api.get("/v1/knowledge/index/get?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
+        return resp
+
+    def update_knowledge_base(self, contract_id: str, **kwargs):
+        """
+        Update a knowledge base in Dria.
+
+        Args:
+            contract_id (str): The contract ID of the knowledge base to update.
+            **kwargs: The fields to update.
+
+        Returns:
+            dict: A response containing the updated knowledge base definition.
+
+        """
+
+        knowledge_definition = {}
+
+        if 'name' in kwargs:
+            knowledge_definition['name'] = kwargs['name']
+        if 'description' in kwargs:
+            knowledge_definition['description'] = kwargs['description']
+        if 'category' in kwargs:
+            knowledge_definition['category'] = kwargs['category']
+
+        if knowledge_definition == {}:
+            raise DriaParameterError("No fields to update")
+
+        knowledge_definition['contract_id'] = contract_id
+        response = self._api.post("/v1/knowledge/index/update",
+                                  payload=knowledge_definition, host=DRIA_UTIL_HOST)
+        return response
