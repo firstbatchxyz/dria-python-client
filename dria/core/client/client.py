@@ -264,7 +264,7 @@ class DriaClient:
         Returns:
             ContractResponse: A response containing the contract details.
         """
-        resp = self._api.get("/v1/knowledge/index/get?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
+        resp = self._api.get("/v1/knowledge/get_knowledge_base?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
         return resp
 
     def update_knowledge_base(self, contract_id: str, **kwargs):
