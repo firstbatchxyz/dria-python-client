@@ -34,7 +34,7 @@ class DriaLocalClient:
 
         resp = self._api.post("/query", payload=qr.model_dump())
         return [QueryResult(**{"id": result["id"], "score": result["score"],
-                               "metadata": json.loads(result["metadata"])}).to_dict() for result in resp]
+                               "metadata": result["metadata"]}).to_dict() for result in resp]
 
     def batch_vector_insert(self, batch: List[Dict]):
         """
@@ -88,9 +88,6 @@ class DriaLocalClient:
         fr = FetchRequest(id=ids)
 
         resp = self._api.post("/fetch", payload=fr.model_dump())
-
-        if "vectors" not in resp or "metadata" not in resp:
-            raise DriaParameterError("Invalid Fetch Response from API")
 
         return [FetchResult(vectors=resp["vectors"][idx],
                             metadata={"id": ids[idx], "metadata": json.loads(result)}).to_json() for idx, result in

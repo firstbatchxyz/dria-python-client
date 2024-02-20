@@ -37,7 +37,6 @@ class FetchResult(BaseModel):
 
 class FetchRequest(BaseModel):
     id: List[int]
-    contract_id: str
 
     def to_json(self):
         return self.model_dump()
