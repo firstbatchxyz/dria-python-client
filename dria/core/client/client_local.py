@@ -88,5 +88,5 @@ class DriaLocalClient:
 
         resp = self._api.post("/fetch", payload=fr.model_dump())
 
-        return [FetchResult(vectors=resp["vectors"][idx],
+        return [FetchResult(vectors=resp[idx]["vectors"],
                             metadata={"id": ids[idx], "metadata": result["metadata"]}) for idx, result in enumerate(resp)]
