@@ -1,4 +1,3 @@
-import json
 from typing import List, Dict
 
 from dria.core.api import APILocal
@@ -90,5 +89,4 @@ class DriaLocalClient:
         resp = self._api.post("/fetch", payload=fr.model_dump())
 
         return [FetchResult(vectors=resp["vectors"][idx],
-                            metadata={"id": ids[idx], "metadata": json.loads(result)}).to_json() for idx, result in
-                enumerate(resp["metadata"])]
+                            metadata={"id": ids[idx], "metadata": result["metadata"]}) for idx, result in enumerate(resp)]
