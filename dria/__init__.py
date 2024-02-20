@@ -1,4 +1,4 @@
-from dria.core import Dria, Models
+from dria.core import Dria, Models, DriaLocal
 from dria.exceptions import DriaParameterError
 
-__all__ = ["Dria", "Models", "DriaParameterError"]
+__all__ = ["Dria", "DriaLocal", "Models", "DriaParameterError"]
