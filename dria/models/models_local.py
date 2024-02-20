@@ -28,7 +28,6 @@ class QueryRequest(BaseModel):
 
 
 class FetchResult(BaseModel):
-    vectors: List
     metadata: Dict
 
     def to_json(self):
