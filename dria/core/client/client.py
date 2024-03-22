@@ -7,7 +7,7 @@ from dria.core.proto.serialization import ProtoBufConverter
 from dria.exceptions import DriaParameterError
 from dria.models import SearchRequest, SearchResult, QueryResult
 from dria.models.models import FetchRequest, InsertResponse, Models, CreateIndex, CreateIndexResponse, \
-    QueryRequest, FetchResult, TextInsertRequest, VectorInsertRequest, ListContracts
+    QueryRequest, FetchResult, TextInsertRequest, VectorInsertRequest, ListContracts, Entry
 
 
 class DriaClient:
@@ -175,7 +175,7 @@ class DriaClient:
 
                 formatted_batch.append((vector, metadata))
         except KeyError:
-            raise DriaParameterError("Batch data must be a list of dictionaries with keys 'vectors' and 'metadata'")
+            raise DriaParameterError("Batch data must be a list of dictionaries with keys 'vector' and 'metadata'")
 
         data = self._converter.serialize_batch_vec(formatted_batch)
         br = VectorInsertRequest(data=data, write_blockchain=write_blockchain,
@@ -204,6 +204,7 @@ class DriaClient:
 
         if len(batch) > 1000:
             raise DriaParameterError("Batch size exceeds the maximum limit of 1000")
+        batch = [item for item in batch if item["text"] != ""]
         try:
             formatted_batch = []
             for item in batch:
@@ -266,6 +267,19 @@ class DriaClient:
         """
         resp = self._api.get("/v1/knowledge/get_knowledge_base?contract_id=" + contract_id, host=DRIA_UTIL_HOST)
         return resp
+
+    def get_entry_count(self, contract_id: str):
+        """
+        Get the number of entries in the knowledge base.
+
+        Args:
+            contract_id (str): The contract ID.
+
+        Returns:
+
+        """
+        resp = self._api.post(self._root_path + "/entry_count", payload={"contract_id": contract_id}, host=DRIA_HOST)
+        return Entry(**resp).model_dump()
 
     def update_knowledge_base(self, contract_id: str, **kwargs):
         """

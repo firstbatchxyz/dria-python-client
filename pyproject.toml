@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dria"
-version = "0.1.16"
+version = "0.1.20"
 description = "A Python client for the Dria API."
 authors = ["Anil Berk Altuner <anil@firstbatch.xyz>", "Omer Kaya <omer@firstbatch.xyz>"]
 readme = "README.md"

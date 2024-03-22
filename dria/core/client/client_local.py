@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from dria.core.api import APILocal
 from dria.exceptions import DriaParameterError
@@ -14,13 +14,14 @@ class DriaLocalClient:
 
         self._api = APILocal()
 
-    def query(self, vector: List[float], top_n: int = 10, level: int = 2):
+    def query(self, vector: List[float], top_n: int = 10, level: int = 2, query: Optional[str] = None):
         """
         Perform a query operation.
         Args:
             vector (List[float]): The query vector.
             top_n (int): The number of results to retrieve.
             level (int): The search level.
+            query (Optional[str]): The query string.
 
         Example:
             dria.query([0.1, 0.2, 0.3], "<CONTRACT_ID>", top_n=10)
@@ -29,7 +30,7 @@ class DriaLocalClient:
             QueryResult: The query response.
         """
 
-        qr = QueryRequest(vector=vector, top_n=top_n, level=level)
+        qr = QueryRequest(vector=vector, top_n=top_n, level=level, query=query)
 
         resp = self._api.post("/query", payload=qr.model_dump())
         return [QueryResult(**{"id": result["id"], "score": result["score"],

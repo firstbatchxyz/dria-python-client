@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
@@ -16,6 +16,7 @@ class QueryRequest(BaseModel):
     vector: List[float]
     top_n: int = 10
     level: int = 2
+    query: Optional[str] = None
 
     def to_json(self):
         return self.model_dump()

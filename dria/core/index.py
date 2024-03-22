@@ -159,6 +159,16 @@ class Dria:
         self._ensure_contract()
         response = self.client.update_knowledge_base(self.contract, **kwargs)
         return response
+    def entry_count(self):
+        """
+        Get the number of entries in the knowledge base.
+
+        Returns:
+            UpdateResponse: A response containing the response from the update method.
+        """
+        self._ensure_contract()
+        response = self.client.get_entry_count(self.contract)
+        return response
 
     def insert_vector(self, batch: list, write_blockchain: bool = True):
         """

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dria.core.client import DriaLocalClient
 
 
@@ -17,19 +19,21 @@ class DriaLocal:
         """
         response = self.client_local.fetch(ids)
         return response
-    def query(self, vector: list, top_n: int = 10, level: int = 2):
+    def query(self, vector: list, query: Optional[str] = None, top_n: int = 10, level: int = 2):
         """
         Perform a query operation.
 
         Args:
             vector (list): The query vector.
+            query (str): The query string.
             top_n (int): The number of results to retrieve.
             level (int): The search level.
+
 
         Returns:
             List[QueryResult]: A list containing the response from the query method.
         """
-        response = self.client_local.query(vector, top_n, level)
+        response = self.client_local.query(vector, top_n, level, query)
         return response
 
     def insert_vector(self, batch: list):

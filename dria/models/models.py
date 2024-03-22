@@ -148,3 +148,6 @@ class ContractDefinition(BaseModel):
 
 class ListContracts(BaseModel):
     contracts: List[ContractDefinition]
+
+class Entry(BaseModel):
+    entry_count: int
