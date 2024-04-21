@@ -23,7 +23,6 @@ class ConfigBuilder:
             api_key: Optional[str] = None,
     ) -> Config:
         api_key = api_key or os.getenv("DRIA_API_KEY")
-        host = host
         headers = {'Content-Type': 'application/json',
                    "Accept-Encoding": "gzip, deflate, br",
                    "Connection": "keep-alive",
